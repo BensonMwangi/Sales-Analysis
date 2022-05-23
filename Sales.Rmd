@@ -1,0 +1,85 @@
+---
+title: "Sales Analysis in R"
+author: "Benson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Importing libraries and data
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(readxl)
+sales<-read_excel("sales.xlsx")
+```
+
+### Exploring the data
+```{r}
+library(skimr)
+skim(sales)
+glimpse(sales)
+```
+
+#### Exploratory visualizations
+```{r}
+sales %>% count(Region, sort = TRUE)
+sales %>% count(Province, sort = TRUE) # Region and province have some same regions
+
+sales<- sales %>% 
+   separate(`Order Date`, sep="-", into = c("year", "month", "day"))
+```
+
+
+```{r}
+sales %>% 
+  ggplot(aes(Sales))+
+  geom_histogram() #sales is positively skewed
+
+
+sales %>% 
+  ggplot(aes(log(Sales)))+
+  geom_histogram() # logging the target variable makes it normally distributed
+```
+
+
+```{r}
+sales %>% 
+  ggplot(aes(Sales,Profit, fill = Region, color = Region))+
+  geom_point(alpha = 0.8)+
+  labs(title = "Scatter plot of profit by sales")+
+  facet_wrap(~ `Customer Segment`)# seems a lot of the sales are in the west but high profits in Ontario
+```
+
+```{r}
+sales %>% 
+  ggplot(aes(`Ship Mode`,`Shipping Cost`, fill = `Order Priority` ))+
+  geom_boxplot(position = "dodge")
+```
+
+```{r}
+sales %>% 
+  ggplot(aes(`Ship Mode`,Sales, fill = `Order Priority` ))+
+  geom_boxplot(position = "dodge")
+```
+
+```{r}
+sales %>% 
+  ggplot(aes(year, Sales, fill = `Product Category`))+
+  geom_col(position = "dodge")+
+  facet_wrap(~ `Customer Segment`) # technology has the highest sales in most years
+```
+
+```{r}
+sales %>% 
+  ggplot(aes(Region,`Shipping Cost`,fill = `Customer Segment`))+
+  geom_boxplot()
+```
+
+### Building the model
+```{r}
+
+```
+
